@@ -20,13 +20,12 @@ output application/json skipNullOn="everywhere"
 ---
 {
 	/*to avoid errors always use default while concatenating*/
-	status :  "printing my input Stringa" ++ (payload.test default ""),
+	//status :  "printing my input String" ++ (payload.test default "") ,
 	
 	/* i want to search in second input that matches with the firsinput variable ordernumebr */
-	/*isexists : sizeOf(secondinput filter($.oderNumber == firstinput.orderNummber)map((item,index)->{
+	isexists : sizeOf(secondinput filter($.oderNumber == firstinput.orderNummber)map((item,index)->{
 		orderNumber : item.orderNumber
-	}))>0*/
-	
+	}))>0
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
