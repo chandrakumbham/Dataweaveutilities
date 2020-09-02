@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="712968d7-d109-4410-92c8-fc1435797e11" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="utilityFlow" doc:id="bc18da1d-208a-4f53-aab1-a508fdfa51fb" >
+		<http:listener doc:name="Listener" doc:id="cc69a947-c887-419b-9e2a-17262efe2022" config-ref="HTTP_Listener_config" path="/mybatch"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ec3df4ef-7ac7-4386-b9cb-f9e7674cf5b0" message="#[attributes]"/>
+		<ee:transform doc:name="Transform Message" doc:id="e0f1dad6-4e26-44a2-befb-f9ccabd7e717" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var firstinput = {orderNumber: 90901}
+var secondinput = [{orderNumber: 90903},{orderNumber: 90901},{orderNumber: 90901}]
+output application/json skipNullOn="everywhere"
+---
+{
+	/*to avoid errors always use default while concatenating*/
+	//status :  "printing my input String" ++ (payload.test default "") ,
+	
+	/* i want to search in second input that matches with the firsinput variable ordernumebr */
+	isexists : sizeOf(secondinput filter($.oderNumber == firstinput.orderNummber)map((item,index)->{
+		orderNumber : item.orderNumber
+	}))>0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0e866b98-641e-45c7-a9c0-26c6ec8143b5" message="#[payload]"/>
+	</flow>
+</mule>
